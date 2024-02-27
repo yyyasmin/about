@@ -40,7 +40,9 @@ const CardGallery = styled.div`
   flex-wrap: wrap;
   background-color: #fad5a5;
   border-radius: 25px;
-  height: calc(100vh - 100px);
+  /*** height: calc(100vh - 100px); ***/
+  height: calc(100vh - 100px); /* Adjusted height based on screen size and title height */
+
   justify-content: space-between;
 `;
 
@@ -74,18 +76,26 @@ function Game() {
     }
   }
 
-
   const broadcastChangeIsMatched = async (isMatched, last2FlippedCards) => {
-    if ( !isEmpty(cr) && !isEmpty(cr.currentPlayers) )
-    await emitCurentIsMatched(isMatched, last2FlippedCards);
+    console.log("IN 1111 -- broadcastChangeIsMatched -- isMatched: ", isMatched)
+    if ( !isEmpty(cr) && !isEmpty(cr.currentPlayers) )  {
+      await emitCurentIsMatched(isMatched, last2FlippedCards);
+    }
   }
 
-  const broadcastChangeCardSize = async (cr) => {
+  const broadcastChangeCardSize = async (cr, isMatched) => {
+    console.log("IN 2222 -- broadcastChangeCardSize -- isMatched: ", isMatched)
+
     let updateCrWithNewCardSize
     if ( !isEmpty(cr) ) {
       if ( !isEmpty(cr.cardsData) ) {
         let cardSize = calculateCardSize(cr.cardsData.length)
-        updateCrWithNewCardSize = {...cr, cardSize: cardSize}
+        let MatchedCardSize = calculateCardSize(2)
+
+        updateCrWithNewCardSize = { ...cr,
+                                    cardSize: cardSize,
+                                    MatchedCardSize: MatchedCardSize
+                                  }
       }
 		  broadcastChangeCr(updateCrWithNewCardSize)
     }
@@ -106,7 +116,7 @@ function Game() {
 
 
   const handleResize = () => {
-		broadcastChangeCardSize(cr);
+		broadcastChangeCardSize(cr, isMatched);
   }
 
   useEffect(() => {
@@ -122,7 +132,7 @@ function Game() {
 	  broadcastChangeCr(currentRoom);
     updateIsMatched(setIsMatched, setLast2FlippedCards)
     if (!isEmpty(currentRoom) && !isEmpty(userName)) {
-      broadcastChangeCardSize(currentRoom);  // Update Cr is in broadcastChangeCardSize
+      broadcastChangeCardSize(currentRoom, isMatched);  // Update Cr is in broadcastChangeCardSize
     }
   }, [currentRoom]);
 
@@ -219,20 +229,6 @@ function Game() {
 		return {...activePlayer}
 	};  
 
-  const handleFlippCount = () =>  {
-    let activePlayer = getActivePlayer();
-    if (!isEmpty(activePlayer) && cr.currentPlayers.length > 1) {
-      const updatedPlayers = cr.currentPlayers.map((player) => {
-        if (player.name === activePlayer.name) {
-          return { ...activePlayer, flippCount: (isMatched || activePlayer.flippCount>=3) ? 0 : activePlayer.flippCount + 1 };
-        } else {
-          return { ...player };
-        }
-      });
-      const updatedRoom = { ...cr, currentPlayers: updatedPlayers };
-      broadcastChangeCr(updatedRoom);
-    }
-  };
 
   const getCardIndexByCardId = (cardId) =>  {
     return cr.cardsData.findIndex((card) => card.id === cardId);
@@ -265,6 +261,7 @@ function Game() {
       setSecondCardFlipped(false);
       setToggleFlag(true);
     } }, [firstCardFlippedBack, secondCardFlippedBack, isMatched] );
+
 
     useEffect(() => {
       if (toggleFlag && !isMatched) {
@@ -349,12 +346,19 @@ function Game() {
     cr.currentPlayers.length > 0 ? (
     last2FlippedCards.map((card, index) => (
 
-      <MatchedCards
-          key={index} 
-          index={index}
-          playerName={userName} 
-          players={cr.currentPlayers} 
-          card={card} />
+          <NikeCard
+          key={index}
+          playerName={userName}
+          card={card}
+          faceType={card.faceType}
+          cardSize={cr.MatchedCardSize}
+          frameColor={cr.frameColor}
+
+          toggleCardFlip={() => {
+            handleCardFlip(card.id);
+          }}
+        />
+
     ))
   )  : (
       <>

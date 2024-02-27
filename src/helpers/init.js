@@ -38,9 +38,15 @@ export const calculateCardSize = (cardsNum) => {
   const containerHeight = initialSize.height;
   let cols, rows
 
-  ////console.log("IN calculateCardSize -- cardsNum: ", cardsNum)
+  console.log("IN calculateCardSize -- cardsNum: ", cardsNum)
 
   switch(cardsNum)  {
+
+    case 2:
+      cols = 2
+      rows = 1
+      break;
+
     case 8:
       cols = 4
       rows = 2
@@ -181,6 +187,7 @@ const initCardsInRoomsFromJson = async (rooms) => {
         gameCards = shuffle(gameCards1.concat(gameCards2));
         room.cardsData = gameCards; 
         room.cardSize = calculateCardSize(gameCards.length)
+        room.MatchedCardSize = calculateCardSize(2)
         room.backgroundImage = backgroundImage;
 
         ////console.log("INIT -- AFTER SHUFFLE -- room: ", room);
