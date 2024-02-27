@@ -1,0 +1,15 @@
+[
+  {
+    "id": "0",
+    "name": "Active listening",
+    "gameName": "Active_listening_1",
+    "difficulty": 0,
+    "maxMembers": 2,
+    "currentPlayers": [],
+    "startGame": false,
+    "endGame": false,
+    "info": "<a href=\"https://youtu.be/3_dAkDsBQyk?t=2\" target=\"_blank\">ALL ABOUT ACTIVE LITENING</a>",
+    "frameColor": "#CCCCFF"
+  
+  }
+]
